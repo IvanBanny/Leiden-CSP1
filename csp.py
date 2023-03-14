@@ -6,8 +6,9 @@ import typing
 
 
 class CSP:
-    def __init__(self, grid:np.ndarray, numbers: typing.Set[int], groups: typing.List[typing.List[typing.Tuple[int,int]]],
-                 constraints: typing.List[typing.Tuple[int,int]]):
+    def __init__(self, grid: np.ndarray, numbers: typing.Set[int],
+                 groups: typing.List[typing.List[typing.Tuple[int, int]]],
+                 constraints: typing.List[typing.Tuple[int, int]]):
 
         """
         The CSP solver object, containing all information and functions required for the assignment. You do not need to change
@@ -64,11 +65,7 @@ class CSP:
         for cell in group:
             group_sum += self.grid[cell]
 
-        if group_sum > sum_constraint:
-            return False
-        else:
-            return True
-
+        return group_sum <= sum_constraint
 
 
     def satisfies_count_constraint(self, group: typing.List[typing.Tuple[int,int]], count_constraint: int) -> bool:
@@ -86,10 +83,11 @@ class CSP:
         numbers_count = {}
         for cell in group:
             value = self.grid[cell]
-            if value in numbers_count:
-                numbers_count[value] += 1
-            else:
-                numbers_count.update({value: 1})
+            if value != 0:
+                if value in numbers_count:
+                    numbers_count[value] += 1
+                else:
+                    numbers_count.update({value: 1})
 
         for value in numbers_count.values():
             if value > count_constraint:
@@ -128,9 +126,26 @@ class CSP:
         :param empty_locations: list of empty locations that still need a value from self.numbers
         """
 
-        # TODO: write this function
+        if len(empty_locations) == 0:
+            return self.grid if self.satisfies_group_constraints([*range(len(self.groups))]) else None
 
-        raise NotImplementedError()
+        fill_cell = empty_locations[0]
+
+        for num in self.numbers:
+            self.grid[fill_cell] = num
+
+            # Clearing self.search() side effects on grid for the constraint check to work
+            for clear_cell in empty_locations[1:]:
+                self.grid[clear_cell] = 0
+
+            if not self.satisfies_group_constraints(self.cell_to_groups[fill_cell]):
+                continue
+
+            ans = self.search(empty_locations[1:])
+            if ans is not None:
+                return ans
+
+        return None
 
 
     def start_search(self):
@@ -143,6 +158,6 @@ class CSP:
         """
 
         self.fill_cell_to_groups()
-        empty_locations = [(row_idx, col_idx) for row_idx in range(self.height) for col_idx in range(self.width) if self.grid[row_idx,col_idx]==0]
+        empty_locations = [(row_idx, col_idx) for row_idx in range(self.height) for col_idx in range(self.width)
+                           if self.grid[row_idx, col_idx] == 0]
         return self.search(empty_locations)
-
