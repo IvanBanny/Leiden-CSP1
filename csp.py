@@ -126,9 +126,13 @@ class CSP:
         :param empty_locations: list of empty locations that still need a value from self.numbers
         """
 
+        # Base case : we have no more cells to fill
+
         if len(empty_locations) == 0:
             # Check if all the group constraints in case the starting grid had issues with the already filled-in numbers
             return self.grid if self.satisfies_group_constraints([*range(len(self.groups))]) else None
+
+        # Recursive step
 
         fill_cell = empty_locations[0]  # Cell that will be filled on this step
 
