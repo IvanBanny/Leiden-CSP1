@@ -127,25 +127,26 @@ class CSP:
         """
 
         if len(empty_locations) == 0:
+            # Check if all the group constraints in case the starting grid had issues with the already filled-in numbers
             return self.grid if self.satisfies_group_constraints([*range(len(self.groups))]) else None
 
-        fill_cell = empty_locations[0]
+        fill_cell = empty_locations[0]  # Cell that will be filled on this step
 
         for num in self.numbers:
-            self.grid[fill_cell] = num
+            self.grid[fill_cell] = num  # Fill the cell
 
-            # Clearing self.search() side effects on grid for the constraint check to work
-            for clear_cell in empty_locations[1:]:
-                self.grid[clear_cell] = 0
-
+            # Check if the constraints are still satisfied for the groups that contain the filled cell
             if not self.satisfies_group_constraints(self.cell_to_groups[fill_cell]):
                 continue
 
-            ans = self.search(empty_locations[1:])
+            ans = self.search(empty_locations[1:])  # Create a new branch in the tree
             if ans is not None:
                 return ans
 
-        return None
+            # Clearing self.search() side effects on grid for the constraint check to work
+            self.grid[empty_locations[1]] = 0
+
+        return None  # Return None if none of the vertex children satisfy the constraints
 
 
     def start_search(self):
