@@ -99,5 +99,27 @@ class TestCSP(unittest.TestCase):
         search = csp.start_search()
         self.assertTrue(np.all(search == solution))
 
+    def test_search_full_greedy(self):
+        grid = np.array([
+            [0, 0],
+            [0, 0]
+        ])
+        solution = np.array([
+            [3, 1],
+            [1, 1],
+        ])
+
+        groups = [
+            [(0, 0), (0, 1)],
+            [(0, 1), (1, 1)],
+        ]
+
+        constraints = [(4, 1), (2, 2)]
+        set_numbers = {1, 3, 5}
+
+        csp = CSP(grid, set_numbers, groups, constraints)
+        search = csp.start_search()
+        self.assertTrue(np.all(search == solution))
+
 if __name__ == '__main__':
     unittest.main()
