@@ -123,4 +123,3 @@ class TestCSP(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    # let's go
